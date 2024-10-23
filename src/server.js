@@ -5,12 +5,14 @@ const colors = require("colors");
 const mongoosse = require("mongoose");
 require("dotenv").config();
 
+// internal dependencies 
+const connectDB = require("./config/db")
+
 const app = express();
+app.use(express.json());
 app.use(cors());
 
-// const 
-
-const mongoUrl = process.env.MONGO_URL;
+connectDB()
 
 app.use("/api", require("./routes/routes"))
 
