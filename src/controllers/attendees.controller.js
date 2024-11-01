@@ -1,35 +1,76 @@
 const mongoose = require("mongoose")
-const Attendees = require("../models/attendees.models")
+const { ReasonPhrases, StatusCodes } = require("http-status-codes")
+
+const Attendees = require("../models/attendees.model")
 
 class AttendeesController {
     async fetchAllAttendees(req, res){
         try {
-            const data = await Attendees.find()
-            res.status(200).json({
-                status: "Successfully Retrived Data",
-                results: data.length,
-                data
+            const searchQuery = req.query.search
+
+            const response = await Attendees.find(
+                searchQuery ? {
+                    $or: [
+                        { first_name: { $regex: req.query.search, $options: "i" } }, 
+                        { last_name: { $regex: req.query.search, $options: "i" } }
+                    ]
+                } : {}
+            )
+
+            res.status(StatusCodes.OK).json({
+                status: ReasonPhrases.OK,
+                results: response.length,
+                data: response
             })
         } catch (error) {
-            res.status(404).json({
-                status: "Failed to Retrived Data",
+            res.status(StatusCodes.NOT_FOUND).json({
+                status: ReasonPhrases.NOT_FOUND,
                 error
             })
         }
     }
 
-    async registerAttendees(req, res){
+    async fetchAttendeeById(req, res){
         try {
-            const registerAttendees = await Attendees.create(req.body)
-            console.log(req)
-            res.status(201).json({
-                status: "Created Successfully",
-                data: registerAttendees
+            const response = await Attendees.findById(req.params.id)
+
+            res.status(StatusCodes.OK).json({
+                status: ReasonPhrases.OK,
+                data: response
             })
         } catch (error) {
-            res.status(422).json({
-                status: "Failed to register Attendees",
-                error,
+            res.status(StatusCodes.NOT_FOUND).json({
+                status: ReasonPhrases.NOT_FOUND,
+                error
+            })
+        }
+    }
+
+    async fetchAttendeesByNetworkLeader(req, res){
+        try {
+            const response = await Attendees.where({ primary_leader: 'Bro. Justin Egonia' })
+
+            res.status(StatusCodes.OK).json({
+                status: ReasonPhrases.OK,
+                data: response
+            })
+        } catch (error) {
+            
+        }
+    }
+
+    async registerAttendee(req, res){
+        try {
+            const response = await Attendees.create(req.body)
+
+            res.status(StatusCodes.CREATED).json({
+                status: ReasonPhrases.CREATED,
+                data: response
+            })
+        } catch (error) {
+            res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
+                status: ReasonPhrases.UNPROCESSABLE_ENTITY,
+                error
             })
         }
     }
@@ -37,20 +78,20 @@ class AttendeesController {
     async editAttendeesProfile(req, res){
         const id = req.params.id;
         const updatedData = req.body;
-        console.log(updatedData)
+        // console.log(updatedData)
         try {
-            const updateAttendeesProfile = await Attendees.findByIdAndUpdate(id, updatedData, {
+            const response = await Attendees.findByIdAndUpdate(id, updatedData, {
                 new: true,
             })
 
-            res.status(200).json({
-                status: "Attendees Profile Updated Successfully",
-                data: updateAttendeesProfile,
+            res.status(StatusCodes.OK).json({
+                status: ReasonPhrases.OK,
+                data: response,
             })
         } catch (error) {
-            res.status(404).json({
-                status: "Cannot Find Attendees Profile",
-                error,
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                status: ReasonPhrases.INTERNAL_SERVER_ERROR,
+                error
             })
         }
     }
@@ -59,15 +100,15 @@ class AttendeesController {
         const id = req.params.id;
 
         try {
-            const deleteAttendeesProfile = await Attendees.findByIdAndDelete(id)
+            const response = await Attendees.findByIdAndDelete(id)
 
-            res.status(410).json({
-                status: "Deleted Successfully",
+            res.status(StatusCodes.OK).json({
+                status: ReasonPhrases.OK,
             })
         } catch (error) {
-            res.status(404).json({
-                status: "Cannot Find Attendees Profile",
-                error,
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                status: ReasonPhrases.INTERNAL_SERVER_ERROR,
+                error
             })
         }
     }

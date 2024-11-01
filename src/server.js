@@ -16,6 +16,6 @@ connectDB()
 
 app.use("/api", require("./routes/routes"))
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, '0.0.0.0', () => {
     console.log('Server Started at ' + `http://localhost:${process.env.PORT}/`.blue.underline)
 })
