@@ -5,8 +5,9 @@ const AttendanceSchema = new Schema(
     {
         week_no: Number,
         time_in: Date,
-        time_out: Date,
-        attendee_id: String,
+        attendee: {
+            type: mongoose.Schema.Types.ObjectId, ref: 'Attendees'
+        },
         attendance_type: String,
     },
     {

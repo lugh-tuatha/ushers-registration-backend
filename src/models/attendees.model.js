@@ -12,6 +12,7 @@ const AttendeesSchema = new Schema(
         church_hierarchy: String,
         primary_leader: String,
         is_leader: Boolean,
+        attendance: Array
     },
     {
         timestamps: true,

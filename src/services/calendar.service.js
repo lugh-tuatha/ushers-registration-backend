@@ -1,14 +1,17 @@
+const moment = require('moment')
+
 class CalendarServices {
     async getAllSundaysOfYear(year) {
         try {
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
             const sundaysByMonth = {}
-
+            
+            let weekNumber = 1
+            
             for (let month = 0; month < 12; month++){
                 const sundays = []
                 let date = new Date(year, month, 1)
-                let weekNumber = 1
 
                 // Find the first Sunday of the month
                 while (date.getDay() !== 0) {
@@ -19,7 +22,7 @@ class CalendarServices {
                 while (date.getMonth() === month) {
                     sundays.push({
                         week_no: weekNumber,
-                        date: date.toLocaleDateString("en-US", { year: "2-digit", month: "2-digit", day: "2-digit" })
+                        date: moment(date).calendar()
                     });
                     date.setDate(date.getDate() + 7);
                     weekNumber++;
