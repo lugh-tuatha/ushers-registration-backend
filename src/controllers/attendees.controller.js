@@ -2,8 +2,29 @@ const mongoose = require("mongoose")
 const { ReasonPhrases, StatusCodes } = require("http-status-codes")
 
 const Attendees = require("../models/attendees.model")
-
+/**
+ * @swagger
+ * tags:
+ *   name: Attendees
+ *   description: Attendees API
+ */
 class AttendeesController {
+    /**
+     * @swagger
+     * /api/v1/attendees:
+     *   get:
+     *     summary: Returns the list of all the Attendees
+     *     tags: [Attendees]
+     *     responses: 
+     *       200:
+     *         description: The list of all the Attendees
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/Attendees'
+     */
     async fetchAllAttendees(req, res){
         try {
             const searchQuery = req.query.search
@@ -14,7 +35,7 @@ class AttendeesController {
                         { first_name: { $regex: req.query.search, $options: "i" } }, 
                         { last_name: { $regex: req.query.search, $options: "i" } }
                     ]
-                } : {}
+                } : { }
             )
 
             res.status(StatusCodes.OK).json({
@@ -55,7 +76,26 @@ class AttendeesController {
                 data: response
             })
         } catch (error) {
-            
+            res.status(StatusCodes.NOT_FOUND).json({
+                status: ReasonPhrases.NOT_FOUND,
+                error
+            })
+        }
+    }
+
+    async fetchAttendeesByChurchHierarchy(req, res){
+        try {
+            const response = await Attendees.where({ church_hierarchy: req.params.hierarchy })
+
+            res.status(StatusCodes.OK).json({
+                status: ReasonPhrases.OK,
+                data: response
+            })
+        } catch (error) {
+            res.status(StatusCodes.NOT_FOUND).json({
+                status: ReasonPhrases.NOT_FOUND,
+                error
+            })
         }
     }
 

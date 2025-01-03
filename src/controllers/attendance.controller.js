@@ -9,7 +9,14 @@ class AttendanceController {
     async fetchAllAttendance(req, res) {
         try {
             const response = await Attendance.find()
-                .populate({path: 'attendee', select: ['first_name', 'last_name', 'primary_leader']})
+                .populate({path: 'attendee', select: [
+                    'first_name', 
+                    'last_name', 
+                    'primary_leader', 
+                    'primary_leader', 
+                    'church_process',
+                    'member_status',
+                ]})
 
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
@@ -43,13 +50,24 @@ class AttendanceController {
         }
     }
 
-    async fetchAttendanceByType(req, res) {
+    async fetchAttendanceByTypeAndWeekNo(req, res) {
         try {
-            const response = await Attendance.where({ attendance_type: req.params.type })
-                .populate({path: 'attendee', select: ['first_name', 'last_name', 'primary_leader']})
-            
+            const weekNumber = req.query.week_no 
+            const response = await Attendance.where(weekNumber ? { 
+                attendance_type: req.params.type,
+                week_no: weekNumber
+            } : { attendance_type: req.params.type })
+            .populate({path: 'attendee', select: [
+                'first_name', 
+                'last_name', 
+                'primary_leader', 
+                'church_process',
+                'member_status',
+            ]}).sort({ time_in: -1 })
+
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
+                results: response.length,
                 data: response
             })
         } catch (error) {
@@ -64,7 +82,13 @@ class AttendanceController {
         try {
             const weekNumber = req.params.week_number;
             const response = await Attendance.where({ week_no: weekNumber })
-                .populate({path: 'attendee', select: ['first_name', 'last_name', 'primary_leader']})
+                .populate({path: 'attendee', select: [
+                    'first_name', 
+                    'last_name', 
+                    'primary_leader', 
+                    'church_process',
+                    'member_status',
+                ]})
             
             console.log(moment().year(2024).startOf('year').add(weekNumber, 'week').day(0))  
 
@@ -95,8 +119,6 @@ class AttendanceController {
             })
         }
     }
-
-
 }
 
 module.exports = new AttendanceController()
