@@ -99,6 +99,22 @@ class AttendeesController {
         }
     }
 
+    async fetchAttendeesByMemberStatus(req, res){
+        try {
+            const response = await Attendees.where({ member_status: req.params.member_status })
+
+            res.status(StatusCodes.OK).json({
+                status: ReasonPhrases.OK,
+                data: response
+            })
+        } catch (error) {
+            res.status(StatusCodes.NOT_FOUND).json({
+                status: ReasonPhrases.NOT_FOUND,
+                error
+            })
+        }
+    }
+
     async registerAttendee(req, res){
         try {
             const response = await Attendees.create(req.body)
@@ -106,7 +122,7 @@ class AttendeesController {
             res.status(StatusCodes.CREATED).json({
                 status: ReasonPhrases.CREATED,
                 data: response
-            })
+            })  
         } catch (error) {
             res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
                 status: ReasonPhrases.UNPROCESSABLE_ENTITY,

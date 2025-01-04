@@ -41,7 +41,10 @@ const {Schema, model} = mongoose;
  *           description: The ministry or process the attendee is currently involved in within the church.
  *         member_status:
  *           type: String
- *           description: The membership status of the attendee 
+ *           description: The membership status of the attendee.
+ *         invited_by:
+ *           type: String
+ *           description: The The person who invited this attendee.
  *       example:
  *         _id: 6721f4b1e2ea6466ce0b227c
  *         first_name: Justin
@@ -54,6 +57,7 @@ const {Schema, model} = mongoose;
  *         is_leader: false
  *         church_process: Pastoral Ministry
  *         member_status: Regular Disciple
+ *         invited_by: Ps. Alip Aspiras
  */
 const AttendeesSchema = new Schema(
     {
@@ -68,6 +72,7 @@ const AttendeesSchema = new Schema(
         is_leader: Boolean,
         church_process: String,
         member_status: String,
+        invited_by: String
     },
     {
         timestamps: true,
