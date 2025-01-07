@@ -1,13 +1,11 @@
 const moment = require('moment')
 
 class CalendarServices {
-    async getAllSundaysOfYear(year) {
+    async getAllSundaysWithMonthByYear(year) {
         try {
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
             const sundaysByMonth = {}
-            
-            let weekNumber = 1
             
             for (let month = 0; month < 12; month++){
                 const sundays = []
@@ -21,11 +19,10 @@ class CalendarServices {
                 // Collect all Sundays in the month with week number
                 while (date.getMonth() === month) {
                     sundays.push({
-                        week_no: weekNumber,
+                        week_no: moment(date).isoWeek(),
                         date: moment(date).calendar()
                     });
                     date.setDate(date.getDate() + 7);
-                    weekNumber++;
                 }
 
                 // Assign Sundays to the month name in the output object
@@ -33,6 +30,28 @@ class CalendarServices {
             }
             // console.log(sundaysByMonth)
             return sundaysByMonth;
+        } catch (error) {
+            
+        }
+    }
+
+    async getAllSundaysByYear() {
+        try {
+            let firstSundayOfYear = new Date('2025-01-05')
+            let lastSundayOfYear = new Date('2025-12-28')
+            console.log(moment(new Date('2025-01-05')).isoWeek())
+ 
+            const sundays = []
+            while (firstSundayOfYear.getTime() !== lastSundayOfYear.getTime()) {
+                sundays.push({
+                    week_no: moment(firstSundayOfYear).isoWeek(),
+                    date: moment(firstSundayOfYear).calendar()
+                });
+
+                firstSundayOfYear.setDate(firstSundayOfYear.getDate() + 7);
+            }
+
+            return sundays;
         } catch (error) {
             
         }
