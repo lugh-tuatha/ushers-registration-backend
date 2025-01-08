@@ -120,9 +120,10 @@ class AttendanceController {
             
             const attendanceData = await AttendanceServices.getAttendanceByTypeAndWeekNo(type, weekNumber)
 
-            const firstTimers = attendanceData.filter(
-                (record) => record.attendee?.member_status === 'First Timer'
-            )
+            const firstTimers = AttendanceServices.filterByMemberStatus(attendanceData, 'First Timer')
+            const secondTimers = AttendanceServices.filterByMemberStatus(attendanceData, 'Second Timer')
+            const thirdTimers = AttendanceServices.filterByMemberStatus(attendanceData, 'Third Timer')
+            const fourthTimers = AttendanceServices.filterByMemberStatus(attendanceData, 'Fourth Timer')
 
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
@@ -132,9 +133,9 @@ class AttendanceController {
                 average_attendees_change_percentage: 100,
                 vips: {
                     first_timer: { count: firstTimers.length, change_percentage: 100 },
-                    second_timer: { count: 9, change_percentage: 100 },
-                    third_timer: { count: 9, change_percentage: 100 },
-                    fourth_timer: { count: 9, change_percentage: 100 },
+                    second_timer: { count: secondTimers.length, change_percentage: 100 },
+                    third_timer: { count: thirdTimers.length, change_percentage: 100 },
+                    fourth_timer: { count: fourthTimers.length, change_percentage: 100 },
                 }
             })
         } catch (error) {

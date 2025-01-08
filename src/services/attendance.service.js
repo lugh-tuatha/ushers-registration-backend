@@ -22,6 +22,10 @@ class AttendanceServices {
             console.log(first)
         }
     }
+
+    filterByMemberStatus(data, status) {
+        return data.filter((record) => record.attendee?.member_status === status);
+    }
 }
 
 module.exports = new AttendanceServices()
