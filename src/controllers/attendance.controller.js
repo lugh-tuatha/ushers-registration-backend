@@ -3,7 +3,7 @@ const moment = require("moment")
 const { ReasonPhrases, StatusCodes } = require("http-status-codes")
 
 const Attendance = require("../models/attendance.model")
-const Attendees = require("../models/attendees.model")
+const AttendanceServices = require("../services/attendance.service")
 
 class AttendanceController {
     async fetchAllAttendance(req, res) {
@@ -20,6 +20,7 @@ class AttendanceController {
 
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
+                total_first_timer: 6,
                 data: response
             })
         } catch (error) {
@@ -52,19 +53,11 @@ class AttendanceController {
 
     async fetchAttendanceByTypeAndWeekNo(req, res) {
         try {
+            const { type } = req.params
             const weekNumber = req.query.week_no 
-            const response = await Attendance.where(weekNumber ? { 
-                attendance_type: req.params.type,
-                week_no: weekNumber
-            } : { attendance_type: req.params.type })
-            .populate({path: 'attendee', select: [
-                'first_name', 
-                'last_name', 
-                'primary_leader', 
-                'church_process',
-                'member_status',
-            ]}).sort({ time_in: -1 })
 
+            const response = await AttendanceServices.getAttendanceByTypeAndWeekNo(type, weekNumber)
+            
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
                 results: response.length,
@@ -115,6 +108,38 @@ class AttendanceController {
         } catch (error) {
             res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
                 status: ReasonPhrases.UNPROCESSABLE_ENTITY,
+                error
+            })
+        }
+    }
+
+    async fetchAttendanceReport(req, res) {
+        try {
+            const { type } = req.params
+            const weekNumber = req.query.week_no 
+            
+            const attendanceData = await AttendanceServices.getAttendanceByTypeAndWeekNo(type, weekNumber)
+
+            const firstTimers = attendanceData.filter(
+                (record) => record.attendee?.member_status === 'First Timer'
+            )
+
+            res.status(StatusCodes.OK).json({
+                status: ReasonPhrases.OK,
+                attendees: attendanceData.length,
+                attendees_change_percentage: 100,
+                average_attendees: attendanceData.length,
+                average_attendees_change_percentage: 100,
+                vips: {
+                    first_timer: { count: firstTimers.length, change_percentage: 100 },
+                    second_timer: { count: 9, change_percentage: 100 },
+                    third_timer: { count: 9, change_percentage: 100 },
+                    fourth_timer: { count: 9, change_percentage: 100 },
+                }
+            })
+        } catch (error) {
+            res.status(StatusCodes.NOT_FOUND).json({
+                status: ReasonPhrases.NOT_FOUND,
                 error
             })
         }

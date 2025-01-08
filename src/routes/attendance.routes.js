@@ -9,5 +9,6 @@ router.get("/attendee/:attendee", AttendanceController.fetchAttendanceByAttendee
 router.get("/type/:type", AttendanceController.fetchAttendanceByTypeAndWeekNo)
 router.get("/week-number/:week_number", attendanceController.fetchAttendanceByWeekNumber)
 router.post("/", AttendanceController.insertNewAttendee)
+router.get("/report/type/:type", AttendanceController.fetchAttendanceReport)
 
 module.exports = router
