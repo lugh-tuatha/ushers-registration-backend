@@ -19,12 +19,20 @@ class AttendanceServices {
 
             return data
         } catch (error) {
-            console.log(first)
         }
     }
 
     filterByMemberStatus(data, status) {
         return data.filter((record) => record.attendee?.member_status === status);
+    }
+    
+    filterByNetwork(data, net) {
+        return data.filter((record) => record.attendee?.network === net)
+    }
+
+    calculateChangePercentage(pervious, current) {
+        const change = ((current - pervious) / pervious) * 100;
+        return change.toFixed(2)
     }
 }
 

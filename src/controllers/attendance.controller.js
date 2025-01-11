@@ -37,8 +37,6 @@ class AttendanceController {
 
             const timeOnly = moment(response[0].time_in).format('LT')
 
-            console.log(timeOnly)
-
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
                 data: response
@@ -83,8 +81,6 @@ class AttendanceController {
                     'member_status',
                 ]})
             
-            console.log(moment().year(2024).startOf('year').add(weekNumber, 'week').day(0))  
-
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
                 data: response
@@ -124,13 +120,18 @@ class AttendanceController {
             const secondTimers = AttendanceServices.filterByMemberStatus(attendanceData, 'Second Timer')
             const thirdTimers = AttendanceServices.filterByMemberStatus(attendanceData, 'Third Timer')
             const fourthTimers = AttendanceServices.filterByMemberStatus(attendanceData, 'Fourth Timer')
+            const children = AttendanceServices.filterByNetwork(attendanceData, 'Children')
+            
+            const attendeesChangePercentage = AttendanceServices.calculateChangePercentage(116, 12)
 
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
                 attendees: attendanceData.length,
-                attendees_change_percentage: 100,
+                attendees_change_percentage: attendeesChangePercentage,
                 average_attendees: attendanceData.length,
                 average_attendees_change_percentage: 100,
+                children_attendees: children.length,
+                children_attendees_change_percentage: 0,
                 vips: {
                     first_timer: { count: firstTimers.length, change_percentage: 100 },
                     second_timer: { count: secondTimers.length, change_percentage: 100 },

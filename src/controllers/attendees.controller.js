@@ -36,7 +36,7 @@ class AttendeesController {
                         { last_name: { $regex: req.query.search, $options: "i" } }
                     ]
                 } : { }
-            )
+            ).sort({ first_name: 1 })
 
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
@@ -83,9 +83,9 @@ class AttendeesController {
         }
     }
 
-    async fetchAttendeesByChurchHierarchy(req, res){
+    async fetchLeaderAttendees(req, res){
         try {
-            const response = await Attendees.where({ church_hierarchy: req.params.hierarchy })
+            const response = await Attendees.where({ is_leader: true })
 
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
