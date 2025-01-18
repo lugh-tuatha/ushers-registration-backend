@@ -93,6 +93,28 @@ class AttendanceController {
         }
     }
 
+    async fetchAttendanceByMemberStatus(req, res) {
+        try {
+            const { type, status } = req.params
+            const weekNumber = req.query.week_no 
+
+            const attendance = await AttendanceServices.getAttendanceByTypeAndWeekNo(type, weekNumber)
+
+            const response = AttendanceServices.filterByMemberStatus(attendance, status)
+
+            res.status(StatusCodes.OK).json({
+                status: ReasonPhrases.OK,
+                results: response.length,
+                data: response
+            })
+        } catch (error) {
+            res.status(StatusCodes.NOT_FOUND).json({
+                status: ReasonPhrases.NOT_FOUND,
+                error
+            })
+        }
+    }
+
     async insertNewAttendee(req, res) {
         try {
             const response = await Attendance.create(req.body)
@@ -122,7 +144,7 @@ class AttendanceController {
             const fourthTimers = AttendanceServices.filterByMemberStatus(attendanceData, 'Fourth Timer')
             const children = AttendanceServices.filterByNetwork(attendanceData, 'Children')
             
-            const attendeesChangePercentage = AttendanceServices.calculateChangePercentage(116, 12)
+            const attendeesChangePercentage = AttendanceServices.calculateChangePercentage(103, 195)
 
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
@@ -131,7 +153,7 @@ class AttendanceController {
                 average_attendees: attendanceData.length,
                 average_attendees_change_percentage: 100,
                 children_attendees: children.length,
-                children_attendees_change_percentage: 0,
+                children_attendees_change_percentage: 100,
                 vips: {
                     first_timer: { count: firstTimers.length, change_percentage: 100 },
                     second_timer: { count: secondTimers.length, change_percentage: 100 },

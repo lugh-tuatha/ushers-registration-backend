@@ -12,9 +12,11 @@ class AttendanceServices {
             .populate({path: 'attendee', select: [
                 'first_name', 
                 'last_name', 
+                'network',
                 'primary_leader', 
                 'church_process',
                 'member_status',
+                'invited_by',
             ]}).sort({ time_in: -1 })
 
             return data

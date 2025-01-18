@@ -39,7 +39,6 @@ class CalendarServices {
         try {
             let firstSundayOfYear = new Date('2025-01-05')
             let lastSundayOfYear = new Date('2025-12-28')
-            console.log(moment(new Date('2025-01-05')).isoWeek())
  
             const sundays = []
             while (firstSundayOfYear.getTime() !== lastSundayOfYear.getTime()) {
