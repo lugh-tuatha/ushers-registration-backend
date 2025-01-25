@@ -44,7 +44,7 @@ class CalendarServices {
             while (firstSundayOfYear.getTime() !== lastSundayOfYear.getTime()) {
                 sundays.push({
                     week_no: moment(firstSundayOfYear).isoWeek(),
-                    date: moment(firstSundayOfYear).calendar()
+                    date: moment(firstSundayOfYear).format('ddd, MMM D YYYY')
                 });
 
                 firstSundayOfYear.setDate(firstSundayOfYear.getDate() + 7);

@@ -27,16 +27,21 @@ class AttendeesController {
      */
     async fetchAllAttendees(req, res){
         try {
-            const searchQuery = req.query.search
-
-            const response = await Attendees.find(
-                searchQuery ? {
-                    $or: [
-                        { first_name: { $regex: req.query.search, $options: "i" } }, 
-                        { last_name: { $regex: req.query.search, $options: "i" } }
-                    ]
-                } : { }
-            ).sort({ first_name: 1 })
+            const search = req.query.search || "";
+            const member_status = req.query.member_status || "all";
+            
+            let query = {
+                $or: [
+                    { first_name: { $regex: search, $options: "i" } },
+                    { last_name: { $regex: search, $options: "i" } }
+                ]
+            };
+            
+            if (member_status !== "all") {
+                query.member_status = { $in: [member_status] };
+            }
+            
+            const response = await Attendees.find(query).sort({ first_name: 1 });
 
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,

@@ -8,19 +8,24 @@ const AttendanceServices = require("../services/attendance.service")
 class AttendanceController {
     async fetchAllAttendance(req, res) {
         try {
-            const response = await Attendance.find()
-                .populate({path: 'attendee', select: [
-                    'first_name', 
-                    'last_name', 
-                    'primary_leader', 
-                    'primary_leader', 
-                    'church_process',
-                    'member_status',
-                ]})
+            const { member_status } = req.query
+            const response = await Attendance.find(req.query)
+                .populate({
+                    path: 'attendee', 
+                    select: [
+                        'first_name', 
+                        'last_name', 
+                        'primary_leader', 
+                        'primary_leader', 
+                        'church_process',
+                        'member_status',
+                    ]
+                })
+            console.log(member_status)
 
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
-                total_first_timer: 6,
+                results: response.length,
                 data: response
             })
         } catch (error) {
@@ -39,26 +44,6 @@ class AttendanceController {
 
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
-                data: response
-            })
-        } catch (error) {
-            res.status(StatusCodes.NOT_FOUND).json({
-                status: ReasonPhrases.NOT_FOUND,
-                error
-            })
-        }
-    }
-
-    async fetchAttendanceByTypeAndWeekNo(req, res) {
-        try {
-            const { type } = req.params
-            const weekNumber = req.query.week_no 
-
-            const response = await AttendanceServices.getAttendanceByTypeAndWeekNo(type, weekNumber)
-            
-            res.status(StatusCodes.OK).json({
-                status: ReasonPhrases.OK,
-                results: response.length,
                 data: response
             })
         } catch (error) {
@@ -126,44 +111,6 @@ class AttendanceController {
         } catch (error) {
             res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
                 status: ReasonPhrases.UNPROCESSABLE_ENTITY,
-                error
-            })
-        }
-    }
-
-    async fetchAttendanceReport(req, res) {
-        try {
-            const { type } = req.params
-            const weekNumber = req.query.week_no 
-            
-            const attendanceData = await AttendanceServices.getAttendanceByTypeAndWeekNo(type, weekNumber)
-
-            const firstTimers = AttendanceServices.filterByMemberStatus(attendanceData, 'First Timer')
-            const secondTimers = AttendanceServices.filterByMemberStatus(attendanceData, 'Second Timer')
-            const thirdTimers = AttendanceServices.filterByMemberStatus(attendanceData, 'Third Timer')
-            const fourthTimers = AttendanceServices.filterByMemberStatus(attendanceData, 'Fourth Timer')
-            const children = AttendanceServices.filterByNetwork(attendanceData, 'Children')
-            
-            const attendeesChangePercentage = AttendanceServices.calculateChangePercentage(103, 195)
-
-            res.status(StatusCodes.OK).json({
-                status: ReasonPhrases.OK,
-                attendees: attendanceData.length,
-                attendees_change_percentage: attendeesChangePercentage,
-                average_attendees: attendanceData.length,
-                average_attendees_change_percentage: 100,
-                children_attendees: children.length,
-                children_attendees_change_percentage: 100,
-                vips: {
-                    first_timer: { count: firstTimers.length, change_percentage: 100 },
-                    second_timer: { count: secondTimers.length, change_percentage: 100 },
-                    third_timer: { count: thirdTimers.length, change_percentage: 100 },
-                    fourth_timer: { count: fourthTimers.length, change_percentage: 100 },
-                }
-            })
-        } catch (error) {
-            res.status(StatusCodes.NOT_FOUND).json({
-                status: ReasonPhrases.NOT_FOUND,
                 error
             })
         }
