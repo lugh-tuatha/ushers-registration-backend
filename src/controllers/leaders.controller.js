@@ -6,7 +6,7 @@ const Leaders = require("../models/leaders.model")
 class LeadersControllers {
     async fetchAllLeaders(req, res){
         try {
-            const response = await Leaders.find()
+            const response = await Leaders.find(req.query)
 
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
@@ -20,6 +20,7 @@ class LeadersControllers {
             })
         }
     }
+
 }
 
 module.exports = new LeadersControllers()

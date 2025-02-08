@@ -6,7 +6,7 @@ const LeaderSchema = new Schema(
         first_name: String,
         last_name: String,
         type: String,
-        desciples_count: Number
+        disciples_count: Number
     },
     {
         timestamps: true,

@@ -4,6 +4,7 @@ const { ReasonPhrases, StatusCodes } = require("http-status-codes")
 
 const Attendance = require("../models/attendance.model")
 const AttendanceServices = require("../services/attendance.service")
+const {response} = require("express");
 
 class AttendanceController {
     async fetchAllAttendance(req, res) {
@@ -86,6 +87,38 @@ class AttendanceController {
             const attendance = await AttendanceServices.getAttendanceByTypeAndWeekNo(type, weekNumber)
 
             const response = AttendanceServices.filterByMemberStatus(attendance, status)
+
+            res.status(StatusCodes.OK).json({
+                status: ReasonPhrases.OK,
+                results: response.length,
+                data: response
+            })
+        } catch (error) {
+            res.status(StatusCodes.NOT_FOUND).json({
+                status: ReasonPhrases.NOT_FOUND,
+                error
+            })
+        }
+    }
+
+    async fetchFilteredAttendance(req, res) {
+        try {
+            const { attendance_type, church_hierarchy, week_no } = req.params
+
+            const attendance = await Attendance.find({ attendance_type, week_no })
+                .populate({
+                    path: 'attendee',
+                    select: [
+                        'first_name',
+                        'last_name',
+                        'primary_leader',
+                        'church_hierarchy',
+                        'church_process',
+                        'member_status',
+                    ]
+                })
+
+            const response = AttendanceServices.filterByChurchHierarchy(attendance, church_hierarchy)
 
             res.status(StatusCodes.OK).json({
                 status: ReasonPhrases.OK,
